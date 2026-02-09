@@ -1,0 +1,5 @@
+[plugin]
+package = "pretix-plugin-advanced-stats"
+modules = [ "pretix_advanced_stats" ]
+marketplace_name = "advanced-stats"
+

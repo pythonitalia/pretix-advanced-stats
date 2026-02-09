@@ -1,0 +1,50 @@
+{% extends "pretixcontrol/event/base.html" %}
+{% load i18n %}
+{% load compress %}
+{% load static %}
+{% load escapejson %}
+{% load money %}
+{% load getitem %}
+{% block title %}{% trans "Advanced Statistics" %}{% endblock %}
+{% block custom_header %}
+<script src="{% static "pretix_advanced_stats/chart.js" %}"></script>
+{% endblock %}
+{% block content %}
+<h1>{% trans "Advanced Statistics" %}</h1>
+{% if has_orders %}
+<div class="panel panel-default">
+
+    <div class="panel-heading">
+        <h3 class="panel-title">{% trans "Filter" %}</h3>
+    </div>
+
+    <form class="panel-body form-inline" method="get">
+        <div class="row">
+            <div class="col-md-4 col-xs-6">
+                <label class="control-label" for="comparing-event">Select an event to compare</label>
+                <select name="comparing-event" class="form-control"
+                    placeholder="Select an event to compare with the current one">
+                    <option value="">---</option>
+                    {% for slug,name in events %}
+                    <option value={{slug}} {% if slug == selected_slug %}selected{% endif %}>{{name}}</option>
+                    {% endfor %}
+                </select>
+                <button class="form-control btn btn-success">Ok</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">{% trans "Sellout by month" %}</h3>
+    </div>
+    <div class="panel-body">
+        <canvas id="bar-chart" data-chart='{{ sellout_comparison_data }}'></canvas>
+    </div>
+</div>
+
+<script src="{% static "pretix_advanced_stats/stats.js" %}"></script>
+
+{%endif%}
+{% endblock content %}
