@@ -1,7 +1,7 @@
+from itertools import accumulate
 import json
 from django.db.models import Case, CharField, Count, F, Value, When
 from django.db.models.functions import ExtractMonth
-from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from pretix.base.models import Event, OrderPosition
 from pretix.control.permissions import EventPermissionRequiredMixin
@@ -48,6 +48,33 @@ class AdvancedStatisticsView(EventPermissionRequiredMixin, TemplateView):
         ]
 
     @staticmethod
+    def cumulative_tickets(data):
+        month_name_to_number = {
+            "January": 1,
+            "February": 2,
+            "March": 3,
+            "April": 4,
+            "May": 5,
+            "June": 6,
+            "July": 7,
+            "August": 8,
+            "September": 9,
+            "October": 10,
+            "November": 11,
+            "December": 12,
+        }
+        enriched = [
+            {**entry, "month": month_name_to_number[entry["month_name"]]}
+            for entry in data
+        ]
+        counts = [entry["ticket_count"] for entry in enriched]
+        cumulative = list(accumulate(counts))
+        return [
+            {**entry, "cumulative_count": cum}
+            for entry, cum in zip(enriched, cumulative)
+        ]
+
+    @staticmethod
     def _retrieve_ticket_from_event(event):
         """Retrieve ticket count grouped by month for a given event."""
         month_name_case = Case(
@@ -71,7 +98,7 @@ class AdvancedStatisticsView(EventPermissionRequiredMixin, TemplateView):
                     start=1,
                 )
             ],
-            output_field=CharField()
+            output_field=CharField(),
         )
 
         return (
@@ -98,12 +125,13 @@ class AdvancedStatisticsView(EventPermissionRequiredMixin, TemplateView):
         tickets_current_event = self.fill_missing_months(
             self._retrieve_ticket_from_event(event)
         )
-        ticket_previous_event = (
+        tickets_previous_event = (
             self.fill_missing_months(self._retrieve_ticket_from_event(comparison_event))
             if comparison_event
             else None
         )
-
+        aggregate_previous_event = self.cumulative_tickets(tickets_previous_event)
+        aggregate_current_event = self.cumulative_tickets(tickets_current_event)
         ctx.update(
             {
                 "events": [
@@ -111,6 +139,8 @@ class AdvancedStatisticsView(EventPermissionRequiredMixin, TemplateView):
                 ],
                 "selected_slug": self.request.GET.get("comparing-event", ""),
                 "has_orders": event.orders.exists(),
+                "aggregate_previous_event": aggregate_previous_event,
+                "aggregate_current_event": aggregate_current_event,
                 "sellout_comparison_data": json.dumps(
                     {
                         "labels": [d["month_name"] for d in tickets_current_event],
@@ -128,7 +158,7 @@ class AdvancedStatisticsView(EventPermissionRequiredMixin, TemplateView):
                                         "label": str(comparison_event.name),
                                         "data": [
                                             d["ticket_count"]
-                                            for d in ticket_previous_event
+                                            for d in tickets_previous_event
                                         ],
                                         "backgroundColor": "#3C1C4A",
                                     }
