@@ -2,25 +2,25 @@ name: Tests
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths-ignore:
-      - 'pretix_advanced_stats/locale/**'
+      - "pretix_advanced_stats/locale/**"
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths-ignore:
-      - 'pretix_advanced_stats/locale/**'
+      - "pretix_advanced_stats/locale/**"
 
 jobs:
   test:
     runs-on: ubuntu-latest
     name: Tests
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Set up Python 3.11
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v6
         with:
           python-version: 3.11
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
