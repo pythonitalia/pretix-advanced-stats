@@ -2,27 +2,27 @@ name: Code Style
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
     paths-ignore:
-      - 'pretix_advanced_stats/locale/**'
-      - 'pretix_advanced_stats/static/**'
+      - "pretix_advanced_stats/locale/**"
+      - "pretix_advanced_stats/static/**"
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
     paths-ignore:
-      - 'pretix_advanced_stats/locale/**'
-      - 'pretix_advanced_stats/static/**'
+      - "pretix_advanced_stats/locale/**"
+      - "pretix_advanced_stats/static/**"
 
 jobs:
   isort:
     name: isort
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Set up Python 3.11
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v6
         with:
           python-version: 3.11
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
@@ -38,12 +38,12 @@ jobs:
     name: flake8
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Set up Python 3.11
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v6
         with:
           python-version: 3.11
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
@@ -60,12 +60,12 @@ jobs:
     name: black
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Set up Python 3.11
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v6
         with:
           python-version: 3.11
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
@@ -82,12 +82,12 @@ jobs:
     name: packaging
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Set up Python 3.11
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v6
         with:
           python-version: 3.11
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
