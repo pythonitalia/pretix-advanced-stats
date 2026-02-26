@@ -1,8 +1,8 @@
-from itertools import accumulate
 import json
 from django.db.models import Case, CharField, Count, F, Value, When
 from django.db.models.functions import ExtractMonth
 from django.views.generic import TemplateView
+from itertools import accumulate
 from pretix.base.models import Event, OrderPosition
 from pretix.control.permissions import EventPermissionRequiredMixin
 
