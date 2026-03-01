@@ -130,8 +130,19 @@ class AdvancedStatisticsView(EventPermissionRequiredMixin, TemplateView):
             if comparison_event
             else None
         )
-        aggregate_previous_event = self.cumulative_tickets(tickets_previous_event)
+        aggregate_previous_event = (
+            self.cumulative_tickets(tickets_previous_event)
+            if tickets_previous_event
+            else []
+        )
         aggregate_current_event = self.cumulative_tickets(tickets_current_event)
+        if aggregate_previous_event:
+            for r_current, r_previous in zip(
+                aggregate_current_event, aggregate_previous_event
+            ):
+                r_current["diff"] = (
+                    r_current["cumulative_count"] - r_previous["cumulative_count"]
+                )
         ctx.update(
             {
                 "events": [

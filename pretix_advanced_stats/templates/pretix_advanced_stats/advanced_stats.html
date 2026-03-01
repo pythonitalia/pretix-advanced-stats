@@ -51,6 +51,32 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-md-6">
+                <h4>{{aggregate_current_event.0.event_name}}</h4>
+                <table class="table">
+                    <thead>
+                        <th>{% trans "Period" %}</th>
+                        <th>{% trans "# tickets" %}</th>
+                        {% if aggregate_previous_event.0.event_name %}
+                            <th>Diff with {{aggregate_previous_event.0.event_name}}</th  >
+                        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% with start_month=aggregate_current_event.0.month_name|slice:":3" %}
+                        {% for r in aggregate_current_event|slice:"1:" %}
+                        <tr>
+                            <td>{{ start_month }}-{{ r.month_name|slice:":3" }}</td>
+                            <td>{{r.cumulative_count}}</td>
+                            {% if aggregate_previous_event.0.event_name %}
+                            <td>{{r.diff}}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                        {% endwith %}
+                    </tbody>
+                </table>
+            </div>
+            {% if aggregate_previous_event.0.event_name %}
+            <div class="col-md-6">
                 <h4>{{aggregate_previous_event.0.event_name}}</h4>
                 <table class="table">
                     <thead>
@@ -66,34 +92,14 @@
                         </tr>
                         {% endfor %}
                         {% endwith %}
-                        
                     </tbody>
                 </table>
             </div>
-            <div class="col-md-6">
-                <h4>{{aggregate_current_event.0.event_name}}</h4>
-                <table class="table">
-                    <thead>
-                        <th>{% trans "Period" %}</th>
-                        <th>{% trans "# tickets" %}</th>
-                    </thead>
-                    <tbody>
-                        {% with start_month=aggregate_current_event.0.month_name|slice:":3" %}
-                        {% for r in aggregate_current_event|slice:"1:" %}
-                        <tr>
-                            <td>{{ start_month }}-{{ r.month_name|slice:":3" }}</td>
-                            <td>{{r.cumulative_count}}</td>
-                        </tr>
-                        {% endfor %}
-                        {% endwith %}
-                    </tbody>
-                </table>
-            </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <script src="{% static "pretix_advanced_stats/stats.js" %}"></script>
-
 {%endif%}
 {% endblock content %}
